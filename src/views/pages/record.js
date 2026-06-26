@@ -3,7 +3,6 @@ import { ReactMic } from "react-mic";
 import firebase from "firebase/app";
 import { Timer } from "../components";
 import prettylink from "prettylink";
-require('dotenv').config();
 
 // Init Access Token in constructor 
 const bitly = new prettylink.Bitly(process.env.REACT_APP_BITLY_ACCESS_TOKEN);

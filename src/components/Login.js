@@ -41,6 +41,14 @@ const LoginPage = () => {
 
   const history = useHistory();
 
+  const skipLogin = () => {
+    sessionStorage.setItem("checkname", "Guest User");
+    sessionStorage.setItem("checkemail", "guest@example.com");
+    auth.login(() => {
+      history.push("/systemcheck");
+    });
+  };
+
   return (
     <div>
       <head>
@@ -65,6 +73,10 @@ const LoginPage = () => {
           cookiePolicy={'single_host_origin'}
           isSignedIn={false}
         />
+        <br />
+        <button onClick={skipLogin} style={{ marginTop: '16px', padding: '10px 20px', fontSize: '16px' }}>
+          Continue without Google
+        </button>
       </div>
     </div>
   );

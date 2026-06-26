@@ -22,7 +22,6 @@ import styles from './../styles.module.css';
 import prettylink from "prettylink";
 import { BigWhiteboard } from 'react-component-whiteboard'
 
-require('dotenv').config();
 // Init Access Token in constructor 
 const bitly = new prettylink.Bitly(process.env.REACT_APP_BITLY_ACCESS_TOKEN);
 //const MINUTE_IN_MS = 60000;

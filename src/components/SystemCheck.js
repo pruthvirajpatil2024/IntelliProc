@@ -8,9 +8,6 @@ import icon from "./icon.png"
 import DetectRTC from 'detectrtc';
 import swal from 'sweetalert';
 
-const NetworkSpeed = require('network-speed');  // ES5
-const testNetworkSpeed = new NetworkSpeed();
-
 var buttonViewDisabled = true
 
 function ValidateCheck() {
@@ -127,15 +124,14 @@ const SystemCheck = () => {
 
   // Network Speed Check
   async function getNetworkDownloadSpeed() {
+    const NetworkSpeed = require('network-speed');
+    const testNetworkSpeed = new NetworkSpeed();
     const baseUrl = 'https://eu.httpbin.org/stream-bytes/500000';
     const fileSizeInBytes = 500000;
     const speed = await testNetworkSpeed.checkDownloadSpeed(baseUrl, fileSizeInBytes);
-    return speed
+    return speed;
   }
   getNetworkDownloadSpeed().then((value) => { sessionStorage.setItem("netspeed", value["mbps"]) })
-
-  // System Detections Package
-  var DetectRTC = require('detectrtc');
 
   ValidateCheck();
 
