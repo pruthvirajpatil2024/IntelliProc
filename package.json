@@ -59,10 +59,7 @@
       "last 1 safari version"
     ]
   },
-  "overrides": {
-    "babel-loader": "8.1.0"
-  },
   "devDependencies": {
-    "babel-loader": "^8.1.0"
+  }
   }
 }
