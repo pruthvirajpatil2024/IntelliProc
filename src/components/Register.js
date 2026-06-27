@@ -25,7 +25,10 @@ const RegisterPage = () => {
   });
   const [saving, setSaving] = React.useState(false);
 
-  const set = field => e => setForm(f => ({ ...f, [field]: e.target.value }));
+  const set = field => e => {
+    const value = e.target.value;
+    setForm(f => ({ ...f, [field]: value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
