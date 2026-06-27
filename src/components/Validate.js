@@ -165,8 +165,28 @@ const ValidatePage = () => {
     // Check for webcam permission
     navigator.getMedia({ video: true }, function () {
       if (state.match == null || state.match == 0 || state.match[0]._label !== name) {
-        swal("Student not recognized as " + name, "You can not proceed with the test unless you are the authorized student.", "error");
-        setbuttonfield(true);
+        swal({
+          title: "Student not recognized as " + name,
+          text: "You can not proceed with the test unless you are the authorized student.",
+          icon: "error",
+          buttons: {
+            cancel: "OK",
+            confirm: {
+              text: "Confirm as Guest",
+              value: "guest",
+              visible: true
+            }
+          }
+        }).then((value) => {
+          if (value === "guest") {
+            sessionStorage.setItem("checkname", "Guest User");
+            sessionStorage.setItem("flag", 1);
+            setbuttonfield(false);
+            swal("Proceeding as Guest", "You can now proceed to the exam.", "success");
+          } else {
+            setbuttonfield(true);
+          }
+        });
       }
       else {
         swal("Success", "Student recognized as " + name);
