@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import firebase from "firebase";
-import config from "../config";
+import firebase from 'firebase/app';
 import 'firebase/database';
+import config from '../config';
 import { useHistory } from 'react-router-dom'
-import { Button } from '@material-ui/core';
 import "./formvalid.css"
 import styles from './../styles.module.css';
 import logo from './../logo.png';
@@ -27,21 +26,25 @@ const Formvalid = () => {
   }
 
   function handleClickformvalid() {
-    const con_db = firebase.database().ref("exam_records");
-    //console.log(Object.keys(con_db))
-    con_db.on('value', (snapshot) => {
-      var s = snapshot.val()
-      var d = s[formvalid]
+    if (!formvalid || !formvalid.trim()) {
+      swal("Invalid Exam Code", "Please enter an exam code.", "error");
+      return;
+    }
+    firebase.database().ref("exam_records").once('value').then((snapshot) => {
+      const s = snapshot.val();
+      const d = s ? s[formvalid] : null;
       if (d != null) {
-        var exam_timer = d["duration"]
+        const exam_timer = d["duration"];
         sessionStorage.setItem("exam_timer", exam_timer);
         sessionStorage.setItem("formvalid", formvalid);
-        sessionStorage.setItem("proctortype", d["proctortype"])
-        history.push("/Dashboard");
+        sessionStorage.setItem("proctortype", d["proctortype"]);
+        history.push("/dashboard");
+      } else {
+        swal("Invalid Exam Code", "Please enter a valid exam code.", "error");
       }
-      else {
-        swal("Invalid Exam Code", "Please Enter A Valid Examcode", "error");
-      }
+    }).catch((error) => {
+      console.error('Firebase exam_records lookup failed:', error);
+      swal("Database Error", error.message || "Unable to validate exam code.", "error");
     });
   };
 
