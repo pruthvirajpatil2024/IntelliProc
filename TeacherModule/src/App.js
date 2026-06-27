@@ -13,6 +13,7 @@ import PageNotFound from './components/404'
 import Admin from './components/Admin'
 import Results from './components/Results'
 import AdminSignIn from './components/AdminSignIn'
+import RegisterTeacher from './components/RegisterTeacher'
 import CodeCheck from './components/CodeCheck'
 import Dashboard from './components/TeacherDash'
 import CreateExam from './components/CreateExam'
@@ -28,6 +29,7 @@ class App extends Component {
         <Switch>
           <Route exact path="/" component={MainPage} />
           <Route exact path="/admin" component={Admin} />
+          <Route exact path="/register" component={RegisterTeacher} />
           <Route exact path="/results" component={Results} />
           <Route exact path="/adminsignin" component={AdminSignIn} />
           <Route exact path="/codecheck" component={CodeCheck} />

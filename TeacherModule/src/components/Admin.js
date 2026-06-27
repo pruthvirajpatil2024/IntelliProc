@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-//import config from "../config";
+import React, { useState, useEffect } from 'react';
+import { auth } from "../config";
 import firebase from "firebase/app";
 import './Results.css';
 import styles from './../styles.module.css';
@@ -13,6 +13,7 @@ import { MdLogout } from "react-icons/md";
 
 const Admin = () => {
   const history = useHistory();
+  const [user, setUser] = useState(null);
   const [examcode, setTitle] = useState('')
   const [formlink, setFormlink] = useState('')
   const [examtimer, setTimer] = useState('')
@@ -41,6 +42,18 @@ const Admin = () => {
     });
   }
 
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      if (!currentUser) {
+        history.push('/adminsignin');
+      } else {
+        setUser(currentUser);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [history]);
+
   function results() {
     history.push('/codecheck');
   }
@@ -50,8 +63,12 @@ const Admin = () => {
   }
 
   function logout() {
-    localStorage.clear();
-    window.location.href = '/';
+    auth.signOut().then(() => {
+      history.push('/adminsignin');
+    }).catch((error) => {
+      console.error('Sign out failed', error);
+      history.push('/adminsignin');
+    });
   };
 
   return (
@@ -59,7 +76,7 @@ const Admin = () => {
       <div className={styles.appHeader}>
         <img src={logo} alt="logo" height="200" margin="0" className={styles.circle} /><br />
         <h2 style={{ color: 'white' }}>
-          <i>Welcome Teacher!</i>
+          <i>Welcome, {user?.email || 'Teacher'}!</i>
         </h2><br />
 
         <div style={{ padding: '0 63px', width: '100%' }}>
@@ -100,12 +117,12 @@ const Admin = () => {
           </div>*/}
 
           <div style={{ display: 'flex', justifyContent: 'space-between', margin: '30px 0' }}>
-            <button class="btn btn-success" onClick={results} ><CgUserList/> Test Results</button>
-            <button class="btn btn-primary" onClick={dash} >Dashboard <FaAngleRight/></button>
+            <button className="btn btn-success" onClick={results} ><CgUserList/> Test Results</button>
+            <button className="btn btn-primary" onClick={dash} >Dashboard <FaAngleRight/></button>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-evenly', margin: '30px 0' }}>
-              <button onClick={logout} class="btn btn-outline-danger" style={{ width: '100%' }}>LogOut <MdLogout/></button>
+              <button onClick={logout} className="btn btn-outline-danger" style={{ width: '100%' }}>LogOut <MdLogout/></button>
           </div>
         </div>
 

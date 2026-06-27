@@ -1,8 +1,7 @@
-import config from "../config";
+import { auth } from "../config";
 import React, { useState } from "react";
 //import TextField from "@material-ui/core/TextField";
-//import { useHistory } from 'react-router-dom';
-import { Redirect } from "react-router-dom";
+import { Redirect, useHistory } from "react-router-dom";
 import swal from 'sweetalert';
 import './Results.css';
 import styles from './../styles.module.css';
@@ -11,24 +10,48 @@ import background from './../bg_images/bg8.jpg';
 import { FaAngleRight } from "react-icons/fa";
 import { FaRedo } from "react-icons/fa";
 //import Button from '@material-ui/core/Button';
-import firebase from "firebase/app";
-// import Button from '@material-ui/core/Button';
-require('firebase/auth')
 
 const AdminSignIn = () => {
+  const history = useHistory();
   const [currentUser, setCurrentUser] = useState(null);
   const handleSubmit = (e) => {
     e.preventDefault();
     const { email, password } = e.target.elements;
     try {
-      config.auth().signInWithEmailAndPassword(email.value, password.value).then((u) => {
-        setCurrentUser(true);
-      }).catch((error) => {
-        swal("Please Contact Admin To Register");
-      });
+      auth.signInWithEmailAndPassword(email.value, password.value)
+        .then(() => {
+          setCurrentUser(true);
+        })
+        .catch((error) => {
+          let message = "Unable to sign in. Please try again.";
+          const errorCode = error && (error.code || error?.response?.data?.error?.message);
+          const errorMsg = error && (error.message || error?.response?.data?.error?.message);
+
+          switch (errorCode) {
+            case 'auth/user-not-found':
+              message = 'Teacher not registered. Please contact admin to register.';
+              break;
+            case 'auth/wrong-password':
+              message = 'Incorrect password. Please try again.';
+              break;
+            case 'auth/invalid-email':
+              message = 'Invalid email address. Please check and try again.';
+              break;
+            case 'auth/too-many-requests':
+              message = 'Too many failed attempts. Please wait and try again later.';
+              break;
+            case 'INVALID_LOGIN_CREDENTIALS':
+            case 'INVALID_PASSWORD':
+              message = 'Invalid email or password. Please try again.';
+              break;
+            default:
+              message = errorMsg || message;
+          }
+          swal(message);
+        });
 
     } catch (error) {
-      alert(error);
+      alert(error.message || error);
     }
   };
 
@@ -49,31 +72,36 @@ const AdminSignIn = () => {
         <h2 style={{ color: 'white' }}>Sign In</h2><br />
 
         <form onSubmit={handleSubmit}>
-          <label for="email" style={{ color: 'white', fontSize: '20px' }}>Email: </label><br />
+          <label htmlFor="email" style={{ color: 'white', fontSize: '20px' }}>Email: </label><br />
           <input type="email"
             name="email"
             id="email"
             placeholder="Enter email"
-            class="form-control-lg"
-            autocomplete="email"
-            autofocus />
+            className="form-control-lg"
+            autoComplete="email"
+            autoFocus />
           <br /><br />
 
-          <label for="password" style={{ color: 'white', fontSize: '20px' }}>Password: </label><br />
+          <label htmlFor="password" style={{ color: 'white', fontSize: '20px' }}>Password: </label><br />
           <input type="password"
             name="password"
             id="password"
             placeholder="Password"
-            autocomplete="current-password"
-            class="form-control-lg" />
+            autoComplete="current-password"
+            className="form-control-lg" />
           <br /><br />
 
           <div style={{ display: 'flex', justifyContent: 'space-between', margin: '30px 0' }}>
-            <button type="reset" class="btn btn-primary"><FaRedo /> Reset</button>
-            <button type="submit" class="btn btn-success">Submit <FaAngleRight /></button>
-            {/* <input type="submit" class="btn btn-success"/> */}
+            <button type="reset" className="btn btn-primary"><FaRedo /> Reset</button>
+            <button type="submit" className="btn btn-success">Submit <FaAngleRight /></button>
+            {/* <input type="submit" className="btn btn-success"/> */}
           </div>
         </form>
+        <div style={{ marginTop: '10px', textAlign: 'center' }}>
+          <button type="button" className="btn btn-link" style={{ color: 'white' }} onClick={() => history.push('/register')}>
+            Not registered? Create a teacher account
+          </button>
+        </div>
       </div></>
   );
 }
