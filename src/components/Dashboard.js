@@ -29,6 +29,9 @@ var questionlist, temp = 0, select = '', nulls = [], selected_answers = [];
 
 const Dashboard = (props) => {
 
+  const examCode = sessionStorage.getItem("formvalid");
+  const studentName = sessionStorage.getItem("checkname");
+
   const [countalt, setcountalt] = useState(0);
   const [countctrl, setcountctrl] = useState(0);
   const [countmeta, setcountmeta] = useState(0);
@@ -43,57 +46,51 @@ const Dashboard = (props) => {
   sessionStorage.setItem("count_tabchange", count_tabchange);
   sessionStorage.setItem("count_fullscreen", count_fullscreen);
 
-  const examCode = sessionStorage.getItem("formvalid");
-  const studentName = sessionStorage.getItem("checkname");
+  // Redirect if no active exam — must be a useEffect to keep hooks order intact
+  useEffect(() => {
+    if (!examCode) window.location.replace('/');
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!examCode) {
-    // No active exam session — redirect to home
-    window.location.replace('/');
-    return null;
-  }
-
-  firebase.database().ref("exam_records").child(examCode).child("questions").on("value", snapshot => {
-    questionlist = [];
-    snapshot.forEach(snap => {
-      questionlist.push(snap.val());
-    });
-  }, (errorObject) => {
-    console.log('Questions read failed: ' + errorObject.name);
-  });
-
-  if (dualproctor == "Dual camera proctoring") {
-    firebase.database().ref("studmobile_records").child(examCode).child(studentName).on("value", snapshot => {
-      if (snapshot.val()) {
-        if (!snapshot.val().laptop)
-          swal("Laptop not found!", "Please place your phone in a position where your laptop is visible", "error")
-      }
+  // Firebase listeners — only run when examCode is valid
+  if (examCode) {
+    firebase.database().ref("exam_records").child(examCode).child("questions").on("value", snapshot => {
+      questionlist = [];
+      snapshot.forEach(snap => {
+        questionlist.push(snap.val());
+      });
     }, (errorObject) => {
-      console.log('Laptop value read failed: ' + errorObject.name);
+      console.log('Questions read failed: ' + errorObject.name);
     });
+
+    if (dualproctor === "Dual camera proctoring") {
+      firebase.database().ref("studmobile_records").child(examCode).child(studentName).on("value", snapshot => {
+        if (snapshot.val()) {
+          if (!snapshot.val().laptop)
+            swal("Laptop not found!", "Please place your phone in a position where your laptop is visible", "error");
+        }
+      }, (errorObject) => {
+        console.log('Laptop value read failed: ' + errorObject.name);
+      });
+    }
   }
 
-  /*useEffect(() => {
-    const interval = setInterval(() => {
-      console.log('Logs every minute');
-    }, MINUTE_IN_MS);
-
-    return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
-  }, [])*/
+  if (!questionlist) questionlist = [];
 
   useEffect(() => {
+    if (!examCode) return;
     for (let i = 0; i < questionlist.length; i++) {
       nulls.push('');
     }
-    setrecord(true)
-    swal("Welcome to the test!", "Your audio is being recorded!")
-  }, []);
+    setrecord(true);
+    swal("Welcome to the test!", "Your audio is being recorded!");
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [question, setquestion] = useState(questionlist[0].question);
-  const [image_question, setimage_question] = useState(questionlist[0].imagequest);
-  const [opt1, setopt1] = useState(questionlist[0].option1);
-  const [opt2, setopt2] = useState(questionlist[0].option2);
-  const [opt3, setopt3] = useState(questionlist[0].option3);
-  const [opt4, setopt4] = useState(questionlist[0].option4);
+  const [question, setquestion] = useState(questionlist[0]?.question || '');
+  const [image_question, setimage_question] = useState(questionlist[0]?.imagequest || '');
+  const [opt1, setopt1] = useState(questionlist[0]?.option1 || '');
+  const [opt2, setopt2] = useState(questionlist[0]?.option2 || '');
+  const [opt3, setopt3] = useState(questionlist[0]?.option3 || '');
+  const [opt4, setopt4] = useState(questionlist[0]?.option4 || '');
   const [index, setindex] = useState(0);
   const [options, setOptions] = useState(nulls);
   const [audio_rec, setAudio_rec] = useState('');
@@ -354,6 +351,9 @@ const Dashboard = (props) => {
   useEffect(() => {
     options[index] = select;
   }, [select]);
+
+  // All hooks above — safe to return null now if no active exam
+  if (!examCode) return null;
 
   function previous() {
     temp = index - 1;
