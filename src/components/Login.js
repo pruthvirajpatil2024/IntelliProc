@@ -12,10 +12,10 @@ const LoginPage = () => {
   const history = useHistory();
   const [loading, setLoading] = React.useState(false);
 
-  // Already logged in — go straight to dashboard
+  // Already logged in — go to home page
   React.useEffect(() => {
     if (auth.isAuthenticated()) {
-      history.replace('/dashboard');
+      history.replace('/');
     }
   }, [history]);
 
@@ -40,7 +40,7 @@ const LoginPage = () => {
         sessionStorage.setItem('checkname', userData.name);
         sessionStorage.setItem('checkemail', userData.email);
         auth.login();
-        history.push('/dashboard');
+        history.push('/');
       } else {
         // New user — go to registration form
         history.push('/register', {

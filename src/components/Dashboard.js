@@ -43,10 +43,18 @@ const Dashboard = (props) => {
   sessionStorage.setItem("count_tabchange", count_tabchange);
   sessionStorage.setItem("count_fullscreen", count_fullscreen);
 
-  firebase.database().ref("exam_records").child(sessionStorage.getItem("formvalid")).child("questions").on("value", snapshot => {
+  const examCode = sessionStorage.getItem("formvalid");
+  const studentName = sessionStorage.getItem("checkname");
+
+  if (!examCode) {
+    // No active exam session — redirect to home
+    window.location.replace('/');
+    return null;
+  }
+
+  firebase.database().ref("exam_records").child(examCode).child("questions").on("value", snapshot => {
     questionlist = [];
     snapshot.forEach(snap => {
-      // snap.val() is the dictionary with all your keys/values from the 'exam_records' path
       questionlist.push(snap.val());
     });
   }, (errorObject) => {
@@ -54,7 +62,7 @@ const Dashboard = (props) => {
   });
 
   if (dualproctor == "Dual camera proctoring") {
-    firebase.database().ref("studmobile_records").child(sessionStorage.getItem("formvalid")).child(sessionStorage.getItem("checkname")).on("value", snapshot => {
+    firebase.database().ref("studmobile_records").child(examCode).child(studentName).on("value", snapshot => {
       if (snapshot.val()) {
         if (!snapshot.val().laptop)
           swal("Laptop not found!", "Please place your phone in a position where your laptop is visible", "error")

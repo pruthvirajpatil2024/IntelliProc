@@ -92,7 +92,7 @@ const EnrollPage = () => {
             <p style={{ color: 'rgba(255,255,255,0.7)', margin: '0 0 28px', fontSize: '14px' }}>
               Your face has been registered successfully, <b style={{ color: 'white' }}>{name}</b>.
             </p>
-            <button onClick={() => history.push('/dashboard')} style={btnGo}>
+            <button onClick={() => history.push('/')} style={btnGo}>
               Go to Dashboard →
             </button>
           </div>
