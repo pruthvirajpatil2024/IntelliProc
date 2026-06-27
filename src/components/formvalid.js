@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
-import firebase from "firebase/app";
+import firebase from "firebase";
+import config from "../config";
+require('firebase/database');
 import { useHistory } from 'react-router-dom'
 import { Button } from '@material-ui/core';
 import "./formvalid.css"
