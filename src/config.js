@@ -2,14 +2,14 @@ import firebase from 'firebase';
 import 'firebase/auth';
 
 const config = firebase.default.initializeApp({
-    apiKey: "AIzaSyCyiJgKu6I43dcX00HRCCuKgaNcQPIqvSg",
-    authDomain: "intelliproc-6c838.firebaseapp.com",
-    databaseURL: "https://intelliproc-6c838-default-rtdb.firebaseio.com",
-    projectId: "intelliproc-6c838",
-    storageBucket: "intelliproc-6c838.appspot.com",
-    messagingSenderId: "1055373727921",
-    appId: "1:1055373727921:web:c4e8c3b8eed586f71c6a90",
-    measurementId: "G-1M45V193PY"
+    apiKey: "AIzaSyDV5sMZemL6-hGFbBOjQ9kJEIIebbeTm6U",
+    authDomain: "evalion-da90f.firebaseapp.com",
+    databaseURL: "https://evalion-da90f-default-rtdb.firebaseio.com",
+    projectId: "evalion-da90f",
+    storageBucket: "evalion-da90f.firebasestorage.app",
+    messagingSenderId: "92713590258",
+    appId: "1:92713590258:web:e767f97aa7c814ec7a5f6b",
+    measurementId: "G-CKSDS6R862"
 });
 
 export const auth = firebase.auth();
