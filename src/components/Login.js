@@ -30,8 +30,8 @@ const LoginPage = () => {
         });
       })
       .catch((error) => {
-        swal("Login Failed", "Kindly try again using Google Account", "error");
-        console.log(error);
+        swal("Login Failed", error.code + ': ' + error.message, "error");
+        console.log('Auth error:', error.code, error.message);
       });
   };
 
