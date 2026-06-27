@@ -58,23 +58,22 @@ const EnrollPage = () => {
   const saveAndProceed = async () => {
     setSaving(true);
     try {
-      const firebaseUser = firebase.auth().currentUser;
-      if (!firebaseUser) throw new Error('Not authenticated');
+      // UID stored in localStorage during registration — more reliable than currentUser
+      const stored = JSON.parse(localStorage.getItem('intelliproc_user') || '{}');
+      const uid = stored.uid;
+      if (!uid) throw new Error('User ID not found. Please log in again.');
 
       const descriptors = captures.map(c => c.descriptor);
 
-      // Save descriptors under the user's profile in Firebase DB
       await firebase.database()
-        .ref('users/' + firebaseUser.uid + '/faceDescriptors')
+        .ref('users/' + uid + '/faceDescriptors')
         .set(descriptors);
 
-      // Update local storage
-      const stored = JSON.parse(localStorage.getItem('intelliproc_user') || '{}');
       localStorage.setItem('intelliproc_user', JSON.stringify({ ...stored, faceEnrolled: true }));
 
       setDone(true);
     } catch (err) {
-      swal('Error', 'Could not save face data. Please try again.', 'error');
+      swal('Error', err.message || 'Could not save face data. Please try again.', 'error');
       console.error(err);
     }
     setSaving(false);
