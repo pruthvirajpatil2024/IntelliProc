@@ -5,77 +5,59 @@ import swal from 'sweetalert';
 import styles from './../styles.module.css';
 import logo from './../logo.png';
 import background from './../bg_images/bg1.jpg';
-import { GoogleLogin } from 'react-google-login'
-
-const client_id = "111865875080-36hhn7iitv6i5vsvsom0kgd57a3ghop8.apps.googleusercontent.com"
+import firebase from 'firebase';
+import { auth as firebaseAuth } from './../config';
 
 const LoginPage = () => {
 
-  //Disable Right click
   if (document.addEventListener) {
     document.addEventListener('contextmenu', function (e) {
       e.preventDefault();
     }, false);
   }
 
-  const onSuccess = (googleUser) => {
-    var profile = googleUser.getBasicProfile();
-    //console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-    //console.log('Name: ' + profile.getName());
-    var checkname = profile.getName();
-    sessionStorage.setItem("checkname", checkname);
-    //console.log('Image URL: ' + profile.getImageUrl());
-    //console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-    var checkemail = profile.getEmail();
-    sessionStorage.setItem("checkemail", checkemail);
-
-    auth.login(() => {
-      history.push("/systemcheck")
-    });
-  };
-
-  const onFaliure = (res) => {
-    swal("Login Failed", "Kindly try again using Google Account", "error");
-    console.log('[Login Success] res:', res);
-  };
-
   const history = useHistory();
 
-  const skipLogin = () => {
-    sessionStorage.setItem("checkname", "Guest User");
-    sessionStorage.setItem("checkemail", "guest@example.com");
-    auth.login(() => {
-      history.push("/systemcheck");
-    });
+  const signInWithGoogle = () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    firebaseAuth.signInWithPopup(provider)
+      .then((result) => {
+        const user = result.user;
+        sessionStorage.setItem("checkname", user.displayName);
+        sessionStorage.setItem("checkemail", user.email);
+        auth.login(() => {
+          history.push("/systemcheck");
+        });
+      })
+      .catch((error) => {
+        swal("Login Failed", "Kindly try again using Google Account", "error");
+        console.log(error);
+      });
   };
 
   return (
     <div>
-      <head>
-        <script src="https://apis.google.com/js/platform.js" async defer></script>
-        <meta name="google-signin-client_id" content="111865875080-36hhn7iitv6i5vsvsom0kgd57a3ghop8.apps.googleusercontent.com"></meta>
-      </head>
-
       <div style={{ backgroundImage: "url(" + background + ")" }} className={styles.bg}> </div>
       <div className={styles.appHeader}>
         <img src={logo} alt="logo" height="250" margin="0" className={styles.circle} /><br />
         <h2 style={{ color: 'white' }}>Sign In</h2>
-        <small>
-          Use your Gmail account
-        </small><br /><br />
-
-        <GoogleLogin
-          clientId={client_id}
-          buttonText="Login"
-          onSuccess={onSuccess}
-          onFailure={onFaliure}
-          prompt="select_account"
-          cookiePolicy={'single_host_origin'}
-          isSignedIn={false}
-        />
-        <br />
-        <button onClick={skipLogin} style={{ marginTop: '16px', padding: '10px 20px', fontSize: '16px' }}>
-          Continue without Google
+        <small>Use your Gmail account</small><br /><br />
+        <button
+          onClick={signInWithGoogle}
+          style={{
+            display: 'flex', alignItems: 'center', gap: '10px',
+            padding: '10px 20px', fontSize: '16px', cursor: 'pointer',
+            backgroundColor: 'white', border: '1px solid #dadce0',
+            borderRadius: '4px', fontFamily: 'Roboto, sans-serif',
+            margin: '0 auto'
+          }}
+        >
+          <img
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+            alt="Google"
+            style={{ width: '20px', height: '20px' }}
+          />
+          Sign in with Google
         </button>
       </div>
     </div>
