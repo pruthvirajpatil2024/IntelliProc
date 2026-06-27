@@ -27,6 +27,8 @@ const Dashboard2 = lazy(() => import('./components/Dashboard2'));
 const AdminSignIn = lazy(() => import('./components/AdminSignIn'));
 const PosenetPage = lazy(() => import('./components/Posenet'));
 const CodeCheck = lazy(() => import('./components/CodeCheck'));
+const EnrollPage = lazy(() => import('./components/Enroll'));
+const RegisterPage = lazy(() => import('./components/Register'));
 class App extends Component {
   render() {
     return (
@@ -56,6 +58,8 @@ class App extends Component {
             <Route exact path="/adminsignin" component={AdminSignIn} />
             <Route exact path="/posenet" component={PosenetPage} />
             <Route exact path="/codecheck" component={CodeCheck} />
+            <Route exact path="/enroll" component={EnrollPage} />
+            <Route exact path="/register" component={RegisterPage} />
             <Route exact path="/404" component={PageNotFound} />
             <Redirect to="/404" />
           </Switch>
